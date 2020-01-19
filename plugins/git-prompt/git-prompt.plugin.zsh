@@ -40,6 +40,7 @@ function update_current_git_vars() {
     GIT_CONFLICTS=$__CURRENT_GIT_STATUS[5]
     GIT_CHANGED=$__CURRENT_GIT_STATUS[6]
     GIT_UNTRACKED=$__CURRENT_GIT_STATUS[7]
+    GIT_REMOTE=$__CURRENT_GIT_STATUS[8]
 }
 
 git_super_status() {
@@ -52,6 +53,9 @@ git_super_status() {
       if [ "$GIT_AHEAD" -ne "0" ]; then
           STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_AHEAD$GIT_AHEAD%{${reset_color}%}"
       fi
+      if [ "$GIT_REMOTE" = "_NO_REMOTE_TRACKING_" ]; then
+          STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_NO_REMOTE_TRACKING%{${reset_color}%}"
+      fi
       STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_SEPARATOR"
       if [ "$GIT_STAGED" -ne "0" ]; then
           STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_STAGED$GIT_STAGED%{${reset_color}%}"
@@ -63,7 +67,7 @@ git_super_status() {
           STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_CHANGED$GIT_CHANGED%{${reset_color}%}"
       fi
       if [ "$GIT_UNTRACKED" -ne "0" ]; then
-          STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_UNTRACKED%{${reset_color}%}"
+          STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_UNTRACKED$GIT_UNTRACKED%{${reset_color}%}"
       fi
       if [ "$GIT_CHANGED" -eq "0" ] && [ "$GIT_CONFLICTS" -eq "0" ] && [ "$GIT_STAGED" -eq "0" ] && [ "$GIT_UNTRACKED" -eq "0" ]; then
           STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_CLEAN"
@@ -85,6 +89,7 @@ ZSH_THEME_GIT_PROMPT_BEHIND="%{↓%G%}"
 ZSH_THEME_GIT_PROMPT_AHEAD="%{↑%G%}"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{…%G%}"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}%{✔%G%}"
+ZSH_THEME_GIT_PROMPT_NO_REMOTE_TRACKING=" L"
 
 # Set the prompt.
 RPROMPT='$(git_super_status)'

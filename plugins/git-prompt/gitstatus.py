@@ -39,16 +39,19 @@ for st in status:
     if st[0] == '#' and st[1] == '#':
         if re.search('Initial commit on', st[2]) or re.search('No commits yet on', st[2]):
             branch = st[2].split(' ')[-1]
+            remote='_NO_REMOTE_TRACKING_'
         elif re.search('no branch', st[2]):  # detached status
             branch = get_tagname_or_hash()
+            remote='_DETACHED_BRANCH_'
         elif len(st[2].strip().split('...')) == 1:
             branch = st[2].strip()
+            remote='_NO_REMOTE_TRACKING_'
         else:
             # current and remote branch info
             branch, rest = st[2].strip().split('...')
             if len(rest.split(' ')) == 1:
-                # remote_branch = rest.split(' ')[0]
-                pass
+                remote = rest.split(' ')[0]
+                # pass
             else:
                 # ahead or behind
                 divergence = ' '.join(rest.split(' ')[1:])
@@ -58,10 +61,11 @@ for st in status:
                         ahead = int(div[len('ahead '):].strip())
                     elif 'behind' in div:
                         behind = int(div[len('behind '):].strip())
+                remote = behind + ahead
     elif st[0] == '?' and st[1] == '?':
         untracked.append(st)
     else:
-        if st[1] == 'M':
+        if st[1] in ['M', 'D']:
             changed.append(st)
         if st[0] == 'U':
             conflicts.append(st)
@@ -76,5 +80,6 @@ out = ' '.join([
     str(len(conflicts)),
     str(len(changed)),
     str(len(untracked)),
+    str(remote)
 ])
 print(out, end='')
